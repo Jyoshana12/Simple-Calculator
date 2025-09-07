@@ -1,46 +1,84 @@
 
 import tkinter as tk
+import math
 
-def click(button_text):
-    current = entry.get()
-    if button_text == "=":
+def click(btn):
+    global expression
+    if btn == "=":
         try:
-            result = str(eval(current))
-            entry.delete(0, tk.END)
-            entry.insert(tk.END, result)
+            result = str(eval(expression))
+            expression_label.config(text=expression)
+            result_label.config(text=result)
+            expression = result
         except:
-            entry.delete(0, tk.END)
-            entry.insert(tk.END, "Error")
-    elif button_text == "C":
-        entry.delete(0, tk.END)
+            expression_label.config(text="")
+            result_label.config(text="Error")
+            expression = ""
+    elif btn == "C":
+        expression = ""
+        expression_label.config(text="")
+        result_label.config(text="")
+    elif btn == "⌫":  # Backspace
+        expression = expression[:-1]
+        result_label.config(text=expression)
+    elif btn == "x²":
+        try:
+            result = str(float(expression) ** 2)
+            expression_label.config(text=f"{expression}²")
+            result_label.config(text=result)
+            expression = result
+        except:
+            expression_label.config(text="")
+            result_label.config(text="Error")
+            expression = ""
+    elif btn == "√":
+        try:
+            result = str(math.sqrt(float(expression)))
+            expression_label.config(text=f"√({expression})")
+            result_label.config(text=result)
+            expression = result
+        except:
+            expression_label.config(text="")
+            result_label.config(text="Error")
+            expression = ""
     else:
-        entry.insert(tk.END, button_text)
+        expression += str(btn)
+        result_label.config(text=expression)
 
-# Create window
+# Main window
 window = tk.Tk()
 window.title("Simple Calculator")
-window.geometry("350x400")
+window.geometry("450x400")
 window.resizable(False, False)
 
-# Entry field
-entry = tk.Entry(window, width=20, font=("Arial", 18), bd=5, relief="ridge", justify="right")
-entry.grid(row=0, column=0, columnspan=4, pady=10, padx=10)
+expression = ""
 
-# Buttons layout
+# Display Labels
+expression_label = tk.Label(window, text="", anchor="e", font=("Arial", 14), 
+                            bg="white", fg="grey", width=22, relief="sunken")
+expression_label.grid(row=0, column=0, columnspan=4, pady=(8,0), padx=8)
+
+result_label = tk.Label(window, text="", anchor="e", font=("Arial", 24, "bold"), 
+                        bg="white", fg="black", width=22, relief="sunken")
+result_label.grid(row=1, column=0, columnspan=4, pady=(0,12), padx=8)
+
+# Corrected Button Layout
 buttons = [
-    ("7",1,0), ("8",1,1), ("9",1,2), ("/",1,3),
-    ("4",2,0), ("5",2,1), ("6",2,2), ("*",2,3),
-    ("1",3,0), ("2",3,1), ("3",3,2), ("-",3,3),
-    ("0",4,0), (".",4,1), ("=",4,2), ("+",4,3),
-    ("C",5,0)
+    ("x²",2,0), ("√",2,1), ("C",2,2), ("⌫",2,3),
+    ("7",3,0), ("8",3,1), ("9",3,2), ("/",3,3),
+    ("4",4,0), ("5",4,1), ("6",4,2), ("*",4,3),
+    ("1",5,0), ("2",5,1), ("3",5,2), ("-",5,3),
+    ("0",6,0), (".",6,1), ("+",6,2), ("=",6,3)
 ]
 
-# Create buttons dynamically
+# Create Buttons
 for (text, row, col) in buttons:
-    button = tk.Button(window, text=text, width=6, height=2, font=("Arial", 14),
-                       command=lambda t=text: click(t))
-    button.grid(row=row, column=col, padx=5, pady=5)
+    btn = tk.Button(window, text=text, width=5, height=2, font=("Arial", 13),
+                    command=lambda t=text: click(t))
+    
+    if text == "=":
+        btn.grid(row=row, column=col, padx=2, pady=2, sticky="nswe")
+    else:
+        btn.grid(row=row, column=col, padx=2, pady=2)
 
-# Run application
 window.mainloop()
-
